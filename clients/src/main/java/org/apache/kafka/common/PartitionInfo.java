@@ -16,6 +16,8 @@
  */
 package org.apache.kafka.common;
 
+import java.util.Map;
+
 /**
  * This is used to describe per-partition state in the MetadataResponse.
  */
@@ -26,10 +28,11 @@ public class PartitionInfo {
     private final Node[] replicas;
     private final Node[] inSyncReplicas;
     private final Node[] offlineReplicas;
+    private final Map<Node, Long> sizes;
 
     // Used only by tests
-    public PartitionInfo(String topic, int partition, Node leader, Node[] replicas, Node[] inSyncReplicas) {
-        this(topic, partition, leader, replicas, inSyncReplicas, new Node[0]);
+    public PartitionInfo(String topic, int partition, Node leader, Node[] replicas, Node[] inSyncReplicas, Map<Node, Long> sizes) {
+        this(topic, partition, leader, replicas, inSyncReplicas, new Node[0], sizes);
     }
 
     public PartitionInfo(String topic,
@@ -37,13 +40,15 @@ public class PartitionInfo {
                          Node leader,
                          Node[] replicas,
                          Node[] inSyncReplicas,
-                         Node[] offlineReplicas) {
+                         Node[] offlineReplicas,
+                         Map<Node, Long> sizes) {
         this.topic = topic;
         this.partition = partition;
         this.leader = leader;
         this.replicas = replicas;
         this.inSyncReplicas = inSyncReplicas;
         this.offlineReplicas = offlineReplicas;
+        this.sizes = sizes;
     }
 
     /**
@@ -89,15 +94,20 @@ public class PartitionInfo {
         return offlineReplicas;
     }
 
+    public Map<Node, Long> sizes() {
+        return sizes;
+    }
+
     @Override
     public String toString() {
-        return String.format("Partition(topic = %s, partition = %d, leader = %s, replicas = %s, isr = %s, offlineReplicas = %s)",
+        return String.format("Partition(topic = %s, partition = %d, leader = %s, replicas = %s, isr = %s, offlineReplicas = %s, sizes = %s)",
                              topic,
                              partition,
                              leader == null ? "none" : leader.idString(),
                              formatNodeIds(replicas),
                              formatNodeIds(inSyncReplicas),
-                             formatNodeIds(offlineReplicas));
+                             formatNodeIds(offlineReplicas),
+                             formatNodeSizes(sizes));
     }
 
     /* Extract the node ids from each item in the array and format for display */
@@ -112,6 +122,11 @@ public class PartitionInfo {
         }
         b.append("]");
         return b.toString();
+    }
+
+    /* Extract the node id and make a nice string together with the size */
+    private String formatNodeSizes(Map<Node, Long> sizes) {
+        return "";
     }
 
 }

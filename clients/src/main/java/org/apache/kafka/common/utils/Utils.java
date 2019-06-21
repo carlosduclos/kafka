@@ -524,6 +524,22 @@ public final class Utils {
     }
 
     /**
+     * Create a string representation of a map joined by the given separator
+     * @param map The map of elements
+     * @param separator the element separator
+     * @return The string representation
+     */
+    public static <K,V> String join(Map<K,V> map, String separator) {
+        Objects.requireNonNull(map);
+        List<String> sizes = map
+            .entrySet()
+            .stream()
+            .map(e -> String.format("(%s, %s)", e.getKey().toString(), e.getValue().toString()))
+            .collect(Collectors.toList());
+        return join(sizes, ", ");
+    }
+
+    /**
      *  Converts a {@code Map} class into a string, concatenating keys and values
      *  Example:
      *      {@code mkString({ key: "hello", keyTwo: "hi" }, "|START|", "|END|", "=", ",")

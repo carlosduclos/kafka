@@ -169,7 +169,8 @@ public class MetadataResponse extends AbstractResponse {
                 partitionMetadata.leader(),
                 partitionMetadata.replicas().toArray(new Node[0]),
                 partitionMetadata.isr().toArray(new Node[0]),
-                partitionMetadata.offlineReplicas().toArray(new Node[0]));
+                partitionMetadata.offlineReplicas().toArray(new Node[0]),
+                partitionMetadata.sizes());
     }
 
     /**
@@ -201,8 +202,9 @@ public class MetadataResponse extends AbstractResponse {
                 List<Node> replicaNodes = convertToNodes(brokersMap(), partitionMetadata.replicaNodes());
                 List<Node> isrNodes = convertToNodes(brokersMap(), partitionMetadata.isrNodes());
                 List<Node> offlineNodes = convertToNodes(brokersMap(), partitionMetadata.offlineReplicas());
+                Map<Node, Long> sizes;
                 partitionMetadataList.add(new PartitionMetadata(partitionError, partitionIndex, leaderNode, leaderEpoch,
-                    replicaNodes, isrNodes, offlineNodes));
+                    replicaNodes, isrNodes, offlineNodes, sizes));
             }
 
             topicMetadataList.add(new TopicMetadata(topicError, topic, isInternal, partitionMetadataList,
@@ -319,6 +321,7 @@ public class MetadataResponse extends AbstractResponse {
         private final List<Node> replicas;
         private final List<Node> isr;
         private final List<Node> offlineReplicas;
+        private final Map<Node, Long> sizes;
 
         public PartitionMetadata(Errors error,
                                  int partition,
@@ -326,7 +329,8 @@ public class MetadataResponse extends AbstractResponse {
                                  Optional<Integer> leaderEpoch,
                                  List<Node> replicas,
                                  List<Node> isr,
-                                 List<Node> offlineReplicas) {
+                                 List<Node> offlineReplicas,
+                                 Map<Node, Long> sizes) {
             this.error = error;
             this.partition = partition;
             this.leader = leader;
@@ -334,6 +338,7 @@ public class MetadataResponse extends AbstractResponse {
             this.replicas = replicas;
             this.isr = isr;
             this.offlineReplicas = offlineReplicas;
+            this.sizes = sizes;
         }
 
         public Errors error() {
@@ -368,6 +373,10 @@ public class MetadataResponse extends AbstractResponse {
             return offlineReplicas;
         }
 
+        public Map<Node, Long> sizes() {
+            return sizes;
+        }
+
         @Override
         public String toString() {
             return "(type=PartitionMetadata" +
@@ -377,7 +386,8 @@ public class MetadataResponse extends AbstractResponse {
                     ", leaderEpoch=" + leaderEpoch +
                     ", replicas=" + Utils.join(replicas, ",") +
                     ", isr=" + Utils.join(isr, ",") +
-                    ", offlineReplicas=" + Utils.join(offlineReplicas, ",") + ')';
+                    ", offlineReplicas=" + Utils.join(offlineReplicas, ",") +
+                    ", sizes=" + Utils.join(sizes, ",") + ')';
         }
     }
 

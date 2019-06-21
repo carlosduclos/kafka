@@ -21,6 +21,7 @@ import org.apache.kafka.common.utils.Utils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -31,6 +32,7 @@ public class TopicPartitionInfo {
     private final Node leader;
     private final List<Node> replicas;
     private final List<Node> isr;
+    private final Map<Node, Long> sizes;
 
     /**
      * Create an instance of this class with the provided parameters.
@@ -41,11 +43,12 @@ public class TopicPartitionInfo {
      *                 is the head of the list)
      * @param isr the in-sync replicas
      */
-    public TopicPartitionInfo(int partition, Node leader, List<Node> replicas, List<Node> isr) {
+    public TopicPartitionInfo(int partition, Node leader, List<Node> replicas, List<Node> isr, Map<Node, Long> sizes) {
         this.partition = partition;
         this.leader = leader;
         this.replicas = Collections.unmodifiableList(replicas);
         this.isr = Collections.unmodifiableList(isr);
+        this.sizes = Collections.unmodifiableMap(sizes);
     }
 
     /**
@@ -79,9 +82,13 @@ public class TopicPartitionInfo {
         return isr;
     }
 
+    public Map<Node, Long> sizes() {
+        return sizes;
+    }
+
     public String toString() {
         return "(partition=" + partition + ", leader=" + leader + ", replicas=" +
-            Utils.join(replicas, ", ") + ", isr=" + Utils.join(isr, ", ") + ")";
+            Utils.join(replicas, ", ") + ", isr=" + Utils.join(isr, ", ") + ", sizes={" + Utils.join(sizes, ", ") + "})";
     }
 
     @Override
@@ -94,7 +101,8 @@ public class TopicPartitionInfo {
         return partition == that.partition &&
             Objects.equals(leader, that.leader) &&
             Objects.equals(replicas, that.replicas) &&
-            Objects.equals(isr, that.isr);
+            Objects.equals(isr, that.isr) &&
+            Objects.equals(sizes, that.sizes);
     }
 
     @Override
@@ -103,6 +111,7 @@ public class TopicPartitionInfo {
         result = 31 * result + (leader != null ? leader.hashCode() : 0);
         result = 31 * result + (replicas != null ? replicas.hashCode() : 0);
         result = 31 * result + (isr != null ? isr.hashCode() : 0);
+        result = 31 * result + (sizes != null ? sizes.hashCode() : 0);
         return result;
     }
 }

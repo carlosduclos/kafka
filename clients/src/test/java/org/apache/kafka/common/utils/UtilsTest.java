@@ -31,7 +31,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -115,6 +117,12 @@ public class UtilsTest {
         assertEquals("", Utils.join(Collections.emptyList(), ","));
         assertEquals("1", Utils.join(asList("1"), ","));
         assertEquals("1,2,3", Utils.join(asList(1, 2, 3), ","));
+        assertEquals("", Utils.join(Collections.emptyMap(), ","));
+        assertEquals("(1, 2)", Utils.join(Collections.singletonMap("1", "2"), ","));
+        Map<String, String> multipleElements = new HashMap<>();
+        multipleElements.put("1", "2");
+        multipleElements.put("3", "4");
+        assertEquals("(1, 2),(3,4)", Utils.join(multipleElements, ","));
     }
 
     @Test

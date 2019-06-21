@@ -1517,7 +1517,7 @@ public class KafkaAdminClient extends AdminClient {
                     for (PartitionInfo partitionInfo : partitionInfos) {
                         TopicPartitionInfo topicPartitionInfo = new TopicPartitionInfo(
                             partitionInfo.partition(), leader(partitionInfo), Arrays.asList(partitionInfo.replicas()),
-                            Arrays.asList(partitionInfo.inSyncReplicas()));
+                            Arrays.asList(partitionInfo.inSyncReplicas()), partitionInfo.sizes());
                         partitions.add(topicPartitionInfo);
                     }
                     partitions.sort(Comparator.comparingInt(TopicPartitionInfo::partition));
